@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-# from odoo import models, fields, api
+from odoo import models, fields, api
 
 
-# class proves(models.Model):
-#     _name = 'proves.proves'
-#     _description = 'proves.proves'
+class school(models.Model):
+     _name = 'school.school'
+     _description = 'school.school'
 
-#     name = fields.Char()
+     name = fields.Char()
 #     value = fields.Integer()
 #     value2 = fields.Float(compute="_value_pc", store=True)
 #     description = fields.Text()
@@ -16,4 +16,3 @@
 #     def _value_pc(self):
 #         for record in self:
 #             record.value2 = float(record.value) / 100
-
