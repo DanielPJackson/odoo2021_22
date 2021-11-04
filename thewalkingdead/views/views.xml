@@ -37,11 +37,7 @@
       <field name="res_model">thewalkingdead.survivor</field>
       <field name="view_mode">tree,form</field>
     </record>
-    <record model="ir.actions.act_window" id="thewalkingdead.vehicles_action_window">
-      <field name="name">thewalkingdead Vehicles</field>
-      <field name="res_model">thewalkingdead.vehicle</field>
-      <field name="view_mode">tree,form</field>
-    </record>
+
 
 
     <record model="ir.actions.act_window" id="thewalkingdead.players_action_window">
@@ -55,11 +51,11 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-        <record model="ir.actions.act_window" id="thewalkingdead.character_template_action_window">
+    <!--  <record model="ir.actions.act_window" id="thewalkingdead.character_template_action_window">
       <field name="name">thewalkingdead Character Templates</field>
       <field name="res_model">character_template</field>
       <field name="view_mode">tree,form</field>
-    </record>
+    </record> -->
     <!-- server action to the one above -->
     <!--
     <record model="ir.actions.server" id="thewalkingdead.action_server">
@@ -93,11 +89,10 @@
     <menuitem name="Building Types" id="thewalkingdead.building_types_list" parent="thewalkingdead.outposts" action="thewalkingdead.b_types_action_window" />
     <menuitem name="Buildings" id="thewalkingdead.buildings_list" parent="thewalkingdead.outposts" action="thewalkingdead.buildings_action_window" />
     <menuitem name="Survivors" id="thewalkingdead.survivors_list" parent="thewalkingdead.outposts" action="thewalkingdead.survivors_action_window" />
-    <menuitem name="Vehicles" id="thewalkingdead.vehicles_list" parent="thewalkingdead.outposts" action="thewalkingdead.vehicles_action_window" />
-<menuitem name="Roads" id="thewalkingdead.roads_list" parent="thewalkingdead.outposts" action="thewalkingdead.roads_action_window" />
+    <menuitem name="Roads" id="thewalkingdead.roads_list" parent="thewalkingdead.outposts" action="thewalkingdead.roads_action_window" />
 
     <menuitem name="Players" id="thewalkingdead.playerss_list" parent="thewalkingdead.clients" action="thewalkingdead.players_action_window" />
 
-<menuitem name="Charater Templates" id="thewalkingdead.character_template" parent="thewalkingdead.aux" action="thewalkingdead.character_template_action_window" />
+<!--<menuitem name="Charater Templates" id="thewalkingdead.character_template" parent="thewalkingdead.aux" action="thewalkingdead.character_template_action_window" /> -->
   </data>
 </odoo>

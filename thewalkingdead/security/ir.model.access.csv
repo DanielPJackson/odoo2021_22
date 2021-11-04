@@ -1,7 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_thewalkingdead_thewalkingdead,thewalkingdead.thewalkingdead,model_thewalkingdead_thewalkingdead,base.group_user,1,1,1,1
+access_thewalkingdead_player,thewalkingdead.player,model_thewalkingdead_player,base.group_user,1,1,1,1
 access_thewalkingdead_survivor,thewalkingdead.survivor,model_thewalkingdead_survivor,base.group_user,1,1,1,1
 access_thewalkingdead_outpost,thewalkingdead.outpost,model_thewalkingdead_outpost,base.group_user,1,1,1,1
 access_thewalkingdead_building,thewalkingdead.building,model_thewalkingdead_building,base.group_user,1,1,1,1
 access_thewalkingdead_building_type,thewalkingdead.building_type,model_thewalkingdead_building_type,base.group_user,1,1,1,1
-
+access_thewalkingdead_road,thewalkingdead.road,model_thewalkingdead_road,base.group_user,1,1,1,1

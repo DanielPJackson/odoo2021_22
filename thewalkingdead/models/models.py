@@ -19,6 +19,13 @@ class player(models.Model):
     water = fields.Float()
     infected = fields.Float()
     daysinfected = fields.Float()
+    quantity_survivors = fields.Integer(compute='_get_q_survivors')
+    survivors = fields.One2many('thewalkingdead.survivor', 'player')
+
+    @api.depends('survivors')
+    def _get_q_survivors(self):
+        for p in self:
+            p.quantity_survivors = len(p.survivors)
 
 
 class survivor(models.Model):
@@ -26,7 +33,6 @@ class survivor(models.Model):
     _description = 'Players'
 
 
-    survivors = fields.One2many('thewalkingdead.survivor', 'player')
     def _generate_name(self):
         first = ["Commander","Bullet","Imperator","Doof","Duff","Immortal","Big","Grease", "Junk", "Rusty"
                  "Gas","War","Feral","Blood","Lead","Max","Sprog","Smoke","Wagon","Baron", "Leather", "Rotten"
@@ -39,28 +45,48 @@ class survivor(models.Model):
                   ,"Serpente","Petal","Dust","Mantis","Preacher"]
         return random.choice(first)+" "+random.choice(second)
 
+    def _generate_infection_state(self):
+
+        return round(random.random())
+
     name = fields.Char(default=_generate_name)
-    name = fields.Char()
-    infected = fields.Float()
+
+    infected = fields.Integer(default=_generate_infection_state)
     daysinfected = fields.Float()
     zombie = fields.Float()
-
+    player = fields.Many2one('thewalkingdead.player', ondelete='set null')
 
 class outpost(models.Model):
     _name = 'thewalkingdead.outpost'
     _description = 'outpost'
+    def _generate_position(self):
+        existent_outposts = self.search([])
 
-    name = fields.Char()
+        x = random.randint(-1000,1000)
+        for e in existent_outposts:
+            if e.position_x!=x:
+                return x
+            else:
+                return _generate_position
+
+
+
+
+    def _generate_name(self):
+        first = ["Dark","chuck up","hopeful","hopeless","steel", "hard", "musky", "crusty", "rotton", "shining", "gloomy", "graceful", "silver"]
+        second = ["hut", "city", "rock", "shire" ,"town", "forest", "cliff","point","clearing","district","club","horizon"]
+        return random.choice(first)+" "+random.choice(second)
+    name =  fields.Char(default=_generate_name)
     energy = fields.Float()
     oil = fields.Float()
     food = fields.Float()
     water = fields.Float()
 
-    buildings = fields.One2many('thewalkindead.building', 'outpost')
-    survivors = fields.One2many('thewalkingdead.survivor', 'outpost')
 
-    position_x = fields.Integer()
-    position_y = fields.Integer()
+    survivors = fields.Many2one('thewalkingdead.survivor', ondelete='set null')
+
+    position_x = fields.Integer(default=_generate_position)
+    position_y = fields.Integer(default=_generate_position)
 
     @api.model
     def action_generate_outposts(self):
@@ -69,6 +95,7 @@ class outpost(models.Model):
         existent_outposts.unlink()
         board = [[0 for x in range(50)] for y in range(50)]
         new_outposts = self
+
 
         if len(existent_outposts) != -1:
             positions = [x for x in range(2500)]
@@ -145,13 +172,18 @@ class building_type(models.Model):
     oil = fields.Float()
     food = fields.Float()
     water = fields.Float()
+    weapon_power = fields.Float()
+    defense = fields.Float()
+class road(models.Model):
+    _name = 'thewalkingdead.road'
+    _description = 'Road beween cities'
 
+    outpost_1 = fields.Many2one('thewalkingdead.outpost', ondelete='cascade')
+    outpost_2 = fields.Many2one('thewalkingdead.outpost', ondelete='cascade')
 class building(models.Model):
     _name = 'thewalkingdead.building'
     _description = 'Buildings'
 
     name = fields.Char()
     type = fields.Many2one('thewalkingdead.building_type')
-    level = fields.Float(default=1) # Possible widget
-    ruined = fields.Float(default=50) # 100% és ruina total i 0 està perfecte
     outpost = fields.Many2one('thewalkingdead.outpost')

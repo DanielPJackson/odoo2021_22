@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data>
+
+
+        <record id="thewalkingdead.twd_house" model="thewalkingdead.building_type">
+            <field name="name">house</field>
+            <field name="energy">0</field>
+            <field name="oil">20</field>
+            <field name="food">40</field>
+            <field name="water">40</field>
+            <field name="weapon_power">3</field>
+            <field name="defense">100</field>
+        </record>
+
+
+        <record id="thewalkingdead.twd_warehouse" model="thewalkingdead.building_type">
+            <field name="name">warehouse</field>
+            <field name="energy">1000</field>
+            <field name="oil">2000</field>
+            <field name="food">4000</field>
+            <field name="water">4000</field>
+            <field name="weapon_power">500</field>
+            <field name="defense">1500</field>
+
+        </record>
+
+
+        <record id="thewalkingdead.twd_hospice" model="thewalkingdead.building_type">
+            <field name="name">hospice</field>
+            <field name="energy">1000</field>
+            <field name="oil">0</field>
+            <field name="food">400</field>
+            <field name="water">400</field>
+            <field name="weapon_power">0</field>
+            <field name="defense">1000</field>
+
+        </record>
+
+    </data>
+
+
+</odoo>
