@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-
+from datetime import timedelta, datetime
 from operator import pos
 from odoo import models, fields, api
 import random
 import math
+
+from odoo.exceptions import UserError
+
 
 class player(models.Model):
     _name = 'thewalkingdead.player'
@@ -20,7 +23,14 @@ class player(models.Model):
     infected = fields.Float()
     daysinfected = fields.Float()
     quantity_survivors = fields.Integer(compute='_get_q_survivors')
-    survivors = fields.One2many('thewalkingdead.survivor', 'player')
+    outposts = fields.Many2many('thewalkingdead.outpost',compute='_get_cities')
+
+
+    @api.depends('survivors')
+    def _get_cities(self):
+        for p in self:
+            p.outposts = p.survivors.outpost.ids
+
 
     @api.depends('survivors')
     def _get_q_survivors(self):
@@ -34,14 +44,14 @@ class survivor(models.Model):
 
 
     def _generate_name(self):
-        first = ["Commander","Bullet","Imperator","Doof","Duff","Immortal","Big","Grease", "Junk", "Rusty"
-                 "Gas","War","Feral","Blood","Lead","Max","Sprog","Smoke","Wagon","Baron", "Leather", "Rotten"
-                 "Salt","Slake","Nuke","Oil","Night","Water","Tank","Rig","People","Nocturne", "Satanic"
-                 "Dead", "Deadly", "Mike", "Mad", "Jhonny","Unpredictable","Freakish","Snake","Praying"]
+        first = ["Commander","Bullet","Crusty", "Imperator","Doof","Duff","Immortal","Big","Grease", "Junk", "Rusty"
+                 "Gas","War","Feral","Blood","Lead","Max","Sprog","Smoke","Bum", "Wagon","Baron", "Leather", "Rotten"
+                 "Salt","Slake","Nuke","Oil","Night","Water","Ass","Tank","Rig","People","Leaky","Nocturne", "Satanic"
+                 "Dead", "Deadly", "Mike", "Mad","Smeg","Smeggy", "Jhonny","Unpredictable","Freakish","Snake","Praying"]
         second = ["Killer","Rider","Cutter","Guts","Eater","Warrior","Colossus","Blaster","Gunner", "Smith", "Doe"
                   "Farmer","Rock","Claw", "Boy", "Girl", "Driver","Ace","Quick","Blitzer", "Fury", "Roadster",
-                  "Interceptor", "Bastich", "Thief", "Bleeder", "Face", "Mutant", "Anomaly", "Risk",
-                  "Garcia", "Salamanca", "Goodman", "Sakura","Bleding Gums","Absent","Hybrid","Desire","Bubblegum"
+                  "Interceptor", "Bastich", "Thief", "Bleeder", "smeg","Ass","Face", "Mutant", "Anomaly", "Risk",
+                  "Garcia", "Salamanca", "Goodman","Bum", "Sakura","Bleding Gums","Absent","Hybrid","Desire","Bubblegum"
                   ,"Serpente","Petal","Dust","Mantis","Preacher"]
         return random.choice(first)+" "+random.choice(second)
 
@@ -52,10 +62,10 @@ class survivor(models.Model):
     name = fields.Char(default=_generate_name)
 
     infected = fields.Integer(default=_generate_infection_state)
-    daysinfected = fields.Float()
-    zombie = fields.Float()
-    player = fields.Many2one('thewalkingdead.player', ondelete='set null')
 
+    zombie = fields.Float(default=0)
+    player = fields.Many2one('thewalkingdead.player', ondelete='set null')
+    outpost = fields.Many2one('thewalkingdead.outpost', ondelete='restrict')
 class outpost(models.Model):
     _name = 'thewalkingdead.outpost'
     _description = 'outpost'
@@ -66,8 +76,7 @@ class outpost(models.Model):
         for e in existent_outposts:
             if e.position_x!=x:
                 return x
-            else:
-                return _generate_position
+
 
 
 
@@ -82,11 +91,23 @@ class outpost(models.Model):
     food = fields.Float()
     water = fields.Float()
 
-
-    survivors = fields.Many2one('thewalkingdead.survivor', ondelete='set null')
+    roads = fields.Many2many('thewalkingdead.roads', compute='_get_roads')
+    players = fields.Many2many('thewalkingdead.player', compute='_get_players', string='Players with survivors')
+    survivors = fields.One2many('thewalkingdead.survivor', 'player')
 
     position_x = fields.Integer(default=_generate_position)
     position_y = fields.Integer(default=_generate_position)
+
+    @api.depends('survivors')
+    def _get_players(self):
+        for c in self:
+            players = []
+            for s in c.survivors:
+                if s.player:
+                    players.append(s.player.id)
+            print(players)
+            c.players = players
+
 
     @api.model
     def action_generate_outposts(self):
@@ -100,7 +121,6 @@ class outpost(models.Model):
         if len(existent_outposts) != -1:
             positions = [x for x in range(2500)]
             random.shuffle(positions)
-            # print(positions)
             for i in range(0, 50):
                 x = math.floor(positions[i] / 50)
                 y = positions[i] % 50
@@ -114,15 +134,6 @@ class outpost(models.Model):
                     "position_x": x,
                     "position_y": y})
                 new_outposts = new_outposts | new_outpost
-            # for i in range(50):
-            #    print(board[i])
-
-            # Crear les carreteres
-            # outposts_done = self
-            # for c in new_outposts:
-            #    outposts_done = outposts_done | c
-            #    for c2 in new_outposts - outposts_done:
-            #        self.env['negooutpost.road'].create({'outpost_1': c.id, 'outpost_2': c2.id})
 
             all_roads = False
             i = 1
@@ -134,33 +145,32 @@ class outpost(models.Model):
                         (r.position_x - c.position_x) ** 2
                         + (r.position_y - c.position_y) ** 2)
                                                    )
-                    # Si no exiteix previament una igual
                     if len(distancias) > i:
-                        # print('i:',i)
-                        if (len(self.env['thewalkingdead.road'].search(
+                        if (len(self.env['thewalkingdead.roads'].search(
                                 [('outpost_1', '=', distancias[i].id), ('outpost_2', '=', c.id)])) == 0):
-                            # print(self.env['negooutpost.road'].search([('outpost_2','=', distancias[i].id),('outpost_1','=', c.id)]))
-                            if (len(self.env['thewalkingdead.road'].search(
+
+                            if (len(self.env['thewalkingdead.roads'].search(
                                     [('outpost_2', '=', distancias[i].id), ('outpost_1', '=', c.id)])) == 0):
-                                # print('Mateixa',c.id)
-                                # Si no té colisió
-                                # https://stackoverflow.com/questions/3838329/how-can-i-check-if-two-segments-intersect
+
                                 def ccw(A, B, C):
                                     return (C.position_y - A.position_y) * (B.position_x - A.position_x) > (
                                                 B.position_y - A.position_y) * (C.position_x - A.position_x)
 
-                                # Return true if line segments AB and CD intersect
                                 def intersect(A, B, C, D):
                                     return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
 
-                                colisionen = self.env['thewalkingdead.road'].search([]).filtered(
+                                colisionen = self.env['thewalkingdead.roads'].search([]).filtered(
                                     lambda r: intersect(r.outpost_1, r.outpost_2, c, distancias[i]))
                                 if len(colisionen) == 0:
-                                    self.env['thewalkingdead.road'].create(
-                                        {'outpost_1': c.id, 'outpost_2': distancias[i].id})  # la primera és ella mateixa
+                                    self.env['thewalkingdead.roads'].create(
+                                        {'outpost_1': c.id, 'outpost_2': distancias[i].id})
                                     all_roads = False
                 i = i + 1
                 print(all_roads, i)
+
+    def _get_roads(self):
+        for c in self:
+            c.roads = self.env['thewalkingdead.roads'].search(['|', ('outpost_1', '=', c.id), ('outpost_2', '=', c.id)]).ids
 
 
 class building_type(models.Model):
@@ -168,18 +178,102 @@ class building_type(models.Model):
     _description = 'Building types'
 
     name = fields.Char()
-    energy = fields.Float() # Pot ser positiu o negatiu i aumenta en el nivell
+    energy = fields.Float()
     oil = fields.Float()
     food = fields.Float()
     water = fields.Float()
     weapon_power = fields.Float()
     defense = fields.Float()
-class road(models.Model):
-    _name = 'thewalkingdead.road'
-    _description = 'Road beween cities'
+class roads(models.Model):
+    _name = 'thewalkingdead.roads'
+    _description = 'Roads beween outposts'
 
+
+    name = fields.Char(compute='_get_name')
     outpost_1 = fields.Many2one('thewalkingdead.outpost', ondelete='cascade')
     outpost_2 = fields.Many2one('thewalkingdead.outpost', ondelete='cascade')
+    distance = fields.Float(compute='_get_distance')
+
+    @api.depends('outpost_1','outpost_2')
+    def _get_distance(self):
+        for r in self:
+            r.distance = math.sqrt((r.outpost_1.position_x - r.outpost_1.position_x)**2 + (r.outpost_2.position_x - r.outpost_2.position_y)**2)
+
+
+
+    @api.onchange('distance')
+    def _get_name(self):
+        for r in self:
+            r.name = r.outpost_1.name," <--> ",r.outpost_2.name
+
+
+class travel(models.Model):
+    _name = 'thewalkingdead.travel'
+    _description = 'journeys between outposts'
+
+    name = fields.Char(default="journey")
+    origin = fields.Many2one('thewalkingdead.outpost', ondelete='cascade')
+    destiny = fields.Many2one('thewalkingdead.outpost', ondelete='cascade')
+    roads = fields.Many2one('thewalkingdead.roads', ondelete='cascade')
+    date_departure = fields.Datetime(default=lambda r: fields.datetime.now())
+    date_end = fields.Datetime(compute='_get_progress')
+    progress = fields.Float(compute='_get_progress')
+
+#    @api.onchange('origin')
+    def _onchange_origin(self):
+        if self.origin != False:
+            roads_available = self.origin.roads
+            outposts_available = roads_available.outpost_1 + roads_available.outpost_2 - self.origin
+            players_in_outpost = self.origin.players.ids
+            print(outposts_available)
+            return {
+                'domain': {
+                    'destiny': [('id', 'in', outposts_available.ids)],
+                    'player': [('id', 'in', players_in_outpost)]
+                }
+            }
+
+    @api.onchange('destiny')
+    def _onchange_destiny(self):
+        if self.destiny != False:
+            roads_available = self.origin.roads & self.destiny.roads
+            self.roads = roads_available.id
+            return {}
+
+
+    def launch_travel(self):
+        for t in self:
+            t.date_departure = fields.datetime.now()
+            for p in t.passengers:
+                p.outpost = False
+
+
+    @api.depends('date_departure', 'roads')
+    def _get_progress(self):
+        for t in self:
+            if t.roads:
+                print(t.roads.distance)
+                if t.date_departure:
+                    d_dep = t.date_departure
+                    data = fields.Datetime.from_string(d_dep)
+                    data = data + timedelta(hours=t.roads.distance)
+                    t.date_end = fields.Datetime.to_string(data)
+
+                    time_remaining = fields.Datetime.context_timestamp(self, t.date_end) - fields.Datetime.context_timestamp(self, datetime.now())
+                    time_remaining = time_remaining.total_seconds() / 60 / 60
+                    t.progress = (1 - time_remaining / t.roads.distance) * 100
+                    if t.progress >= 100:
+                        t.progress = 100
+                else:
+                    t.progress = 0
+                    t.date_end = False
+            else:
+                t.progress = 0
+                t.date_end = False
+
+    player = fields.Many2one('thewalkingdead.player')
+    passengers = fields.Many2many('thewalkingdead.survivor')
+
 class building(models.Model):
     _name = 'thewalkingdead.building'
     _description = 'Buildings'

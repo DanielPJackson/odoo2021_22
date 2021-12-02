@@ -27,6 +27,8 @@
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/survivors.xml',
+        'views/travels.xml',
         'demo/building_type_demo.xml',
     ],
     # only loaded in demonstration mode

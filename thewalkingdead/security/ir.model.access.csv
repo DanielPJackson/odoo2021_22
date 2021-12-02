@@ -4,4 +4,5 @@ access_thewalkingdead_survivor,thewalkingdead.survivor,model_thewalkingdead_surv
 access_thewalkingdead_outpost,thewalkingdead.outpost,model_thewalkingdead_outpost,base.group_user,1,1,1,1
 access_thewalkingdead_building,thewalkingdead.building,model_thewalkingdead_building,base.group_user,1,1,1,1
 access_thewalkingdead_building_type,thewalkingdead.building_type,model_thewalkingdead_building_type,base.group_user,1,1,1,1
-access_thewalkingdead_road,thewalkingdead.road,model_thewalkingdead_road,base.group_user,1,1,1,1
+access_thewalkingdead_roads,thewalkingdead.roads,model_thewalkingdead_roads,base.group_user,1,1,1,1
+access_thewalkingdead_travel,thewalkingdead.travel,model_thewalkingdead_travel,base.group_user,1,1,1,1

@@ -3,8 +3,8 @@
         <!-- explicit list view definition -->
 
         <record model="ir.ui.view" id="thewalkingdead.player">
-            <field name="name">negocity player Tree</field>
-            <field name="model">negocity.player</field>
+            <field name="name">thewalkingdead player Tree</field>
+            <field name="model">thewalkingdead.player</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name" />

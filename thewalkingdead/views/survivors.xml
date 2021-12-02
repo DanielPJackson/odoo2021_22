@@ -1,0 +1,54 @@
+<odoo>
+    <data>
+
+      <record model="ir.ui.view" id="thewalkingdead.survivor_tree">
+      <field name="name">thewalkingdead Surtree</field>
+      <field name="model">thewalkingdead.survivor</field>
+      <field name="arch" type="xml">
+        <tree decoration-danger="infected>0">
+          <field name="name"/>
+          <field name="player"/>
+          <field name="infected"/>
+        </tree>
+      </field>
+    </record>
+
+          <record model="ir.ui.view" id="thewalkingdead.survivor_graph">
+              <field name="name">thewalkingdead infectgraph</field>
+              <field name="model">thewalkingdead.survivor</field>
+              <field name="arch" type="xml">
+                 <graph string="infected healthy survivors ratio">
+                           <field name="infected"/>
+                 </graph>
+              </field>
+    </record>
+
+    <record id="thewalkingdead.survivor_kanban" model="ir.ui.view">
+        <field name="name">thewalkingdead kanbansur</field>
+        <field name="model">thewalkingdead.survivor</field>
+        <field name="arch" type="xml">
+            <kanban>
+              <field name="name"/>
+              <field name="player"/>
+              <field name="infected"/>
+            <templates>
+                <t t-name="kanban-box">
+                    <div>
+                       <a type="open"><h4 class="o_kanban_record_title oe_partner_heading"><field name="name"/></h4></a>
+                        <ul>
+                            <li t-if="record.name.raw_value">Name: <field name="name"/></li>
+                            <li t-if="record.name.raw_value">Owner: <field name="player"/></li>
+                            <li t-if="record.name.raw_value">Infected state: <field name="infected"/></li>
+                        </ul>
+                    </div>
+                </t>
+            </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+
+
+    </data>
+</odoo>
