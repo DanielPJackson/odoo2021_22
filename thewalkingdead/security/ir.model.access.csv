@@ -6,3 +6,4 @@ access_thewalkingdead_building,thewalkingdead.building,model_thewalkingdead_buil
 access_thewalkingdead_building_type,thewalkingdead.building_type,model_thewalkingdead_building_type,base.group_user,1,1,1,1
 access_thewalkingdead_roads,thewalkingdead.roads,model_thewalkingdead_roads,base.group_user,1,1,1,1
 access_thewalkingdead_travel,thewalkingdead.travel,model_thewalkingdead_travel,base.group_user,1,1,1,1
+access_thewalkingdead_character_template,thewalkingdead.character_template,model_thewalkingdead_character_template,base.group_user,1,1,1,1

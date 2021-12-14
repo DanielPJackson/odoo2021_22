@@ -5,6 +5,9 @@ from odoo import models, fields, api
 import random
 import math
 
+
+
+
 from odoo.exceptions import UserError
 
 
@@ -66,6 +69,8 @@ class survivor(models.Model):
     zombie = fields.Float(default=0)
     player = fields.Many2one('thewalkingdead.player', ondelete='set null')
     outpost = fields.Many2one('thewalkingdead.outpost', ondelete='restrict')
+    template = fields.Many2one('thewalkingdead.character_template', ondelete='restrict')
+    avatar = fields.Image(max_width=200, max_height=400, related='template.image')
 class outpost(models.Model):
     _name = 'thewalkingdead.outpost'
     _description = 'outpost'
@@ -281,3 +286,11 @@ class building(models.Model):
     name = fields.Char()
     type = fields.Many2one('thewalkingdead.building_type')
     outpost = fields.Many2one('thewalkingdead.outpost')
+
+
+
+class character_template(models.Model):
+    _name = 'thewalkingdead.character_template'
+    _description = 'Templates to generate characters'
+    name = fields.Char()
+    image = fields.Image(max_width=200, max_height=400)

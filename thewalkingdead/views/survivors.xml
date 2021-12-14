@@ -31,15 +31,25 @@
               <field name="name"/>
               <field name="player"/>
               <field name="infected"/>
+              <field name="id"/>
+
+
             <templates>
                 <t t-name="kanban-box">
+
+                            <div t-attf-class="oe_kanban_card o_kanban_record_has_image_fill ">
+                                <div class="o_kanban_image_fill_left o_kanban_image_full d-none d-md-block thewalkingdead_img_kanban"
+                                     t-attf-style="background-image:url('#{kanban_image('thewalkingdead.survivor', 'avatar', record.id.value, placeholder)}')">
+                                </div>
                     <div>
                        <a type="open"><h4 class="o_kanban_record_title oe_partner_heading"><field name="name"/></h4></a>
                         <ul>
                             <li t-if="record.name.raw_value">Name: <field name="name"/></li>
                             <li t-if="record.name.raw_value">Owner: <field name="player"/></li>
                             <li t-if="record.name.raw_value">Infected state: <field name="infected"/></li>
+
                         </ul>
+                    </div>
                     </div>
                 </t>
             </templates>
