@@ -1,6 +1,34 @@
 <odoo>
     <data>
 
+
+          <record model="ir.ui.view" id="thewalkingdead.survivor_form">
+      <field name="name">thewalkingdead Surform</field>
+      <field name="model">thewalkingdead.survivor</field>
+      <field name="arch" type="xml">
+        <form>
+        <header>
+        <button name="btn_draft" string="establecer como draft" class="oe-highlight" states="confirm,cancel" type="object"/>
+        <button name="btn_confirmar" string="confirmar" class="oe-highlight" states="draft" type="object"/>
+        <field name="state" widget="statusbar"/>
+
+        </header>
+        <sheet>
+          <field name="avatar" widget="image"/>
+          <group>
+          <field name="name"/>
+          <field name="player"/>
+          <field name="infected"/>
+          <field name="outpost"/>
+          <field name="template"/>
+          </group>
+
+
+          </sheet>
+        </form>
+      </field>
+    </record>
+
       <record model="ir.ui.view" id="thewalkingdead.survivor_tree">
       <field name="name">thewalkingdead Surtree</field>
       <field name="model">thewalkingdead.survivor</field>
@@ -21,7 +49,7 @@
                            <field name="infected"/>
                  </graph>
               </field>
-    </record>
+          </record>
 
     <record id="thewalkingdead.survivor_kanban" model="ir.ui.view">
         <field name="name">thewalkingdead kanbansur</field>
@@ -57,7 +85,19 @@
         </field>
     </record>
 
-
+          <record model="ir.ui.view" id="thewalkingdead.survivor_search">
+              <field name="name">thewalkingdead search</field>
+              <field name="model">thewalkingdead.survivor</field>
+              <field name="arch" type="xml">
+                 <search>
+                           <field name="name"/>
+                           <field name="zombie"/>
+                           <field name="infected" string="Infected" filter_domain="[('infected','=','self')]"/>
+                           <filter name="not_infected" string="Non Infected Survivors" domain="[('infected','=','0')]"></filter>
+                           <filter name="group_by_outpost" string="Group By Outpost" context="{'group_by': 'outpost'}"></filter>
+                 </search>
+              </field>
+    </record>
 
 
     </data>

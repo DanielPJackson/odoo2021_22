@@ -27,6 +27,12 @@ class player(models.Model):
     daysinfected = fields.Float()
     quantity_survivors = fields.Integer(compute='_get_q_survivors')
     outposts = fields.Many2many('thewalkingdead.outpost',compute='_get_cities')
+    def create_survivor(self):
+        for p in self:
+            template = random.choice(self.env['thewalkingdead.character_template'].search([]).mapped(lambda t: t.id))
+            outpost = random.choice(self.env['thewalkingdead.outpost'].search([]).mapped(lambda t: t.id))
+            survivor = self.env['thewalkingdead.survivor'].create({'player': p.id, 'template': template, 'outpost': outpost})
+
 
 
     @api.depends('survivors')
@@ -58,6 +64,9 @@ class survivor(models.Model):
                   ,"Serpente","Petal","Dust","Mantis","Preacher"]
         return random.choice(first)+" "+random.choice(second)
 
+
+
+
     def _generate_infection_state(self):
 
         return round(random.random())
@@ -71,6 +80,24 @@ class survivor(models.Model):
     outpost = fields.Many2one('thewalkingdead.outpost', ondelete='restrict')
     template = fields.Many2one('thewalkingdead.character_template', ondelete='restrict')
     avatar = fields.Image(max_width=200, max_height=400, related='template.image')
+    state = fields.Selection(string="state", selection=[
+
+        ('draft', 'Draft'),
+        ('confirmar', 'Confirmado')
+
+    ], required=False, default='draft')
+
+
+    def btn_draft(self):
+        self.state = 'draft'
+
+
+    def btn_confirmar(self):
+        self.state = 'confirmar'
+
+
+
+
 class outpost(models.Model):
     _name = 'thewalkingdead.outpost'
     _description = 'outpost'
@@ -114,64 +141,7 @@ class outpost(models.Model):
             c.players = players
 
 
-    @api.model
-    def action_generate_outposts(self):
-        print('**************Generate')
-        existent_outposts = self.search([])
-        existent_outposts.unlink()
-        board = [[0 for x in range(50)] for y in range(50)]
-        new_outposts = self
-
-
-        if len(existent_outposts) != -1:
-            positions = [x for x in range(2500)]
-            random.shuffle(positions)
-            for i in range(0, 50):
-                x = math.floor(positions[i] / 50)
-                y = positions[i] % 50
-                print(x, y)
-                board[x][y] = 1
-                new_outpost = self.create({
-                    "energy": random.random() * 100,
-                    "oil": random.random() * 100,
-                    "food": random.random() * 100,
-                    "water": random.random() * 100,
-                    "position_x": x,
-                    "position_y": y})
-                new_outposts = new_outposts | new_outpost
-
-            all_roads = False
-            i = 1
-            while all_roads == False:
-                all_roads = True
-
-                for c in new_outposts:
-                    distancias = new_outposts.sorted(key=lambda r: math.sqrt(
-                        (r.position_x - c.position_x) ** 2
-                        + (r.position_y - c.position_y) ** 2)
-                                                   )
-                    if len(distancias) > i:
-                        if (len(self.env['thewalkingdead.roads'].search(
-                                [('outpost_1', '=', distancias[i].id), ('outpost_2', '=', c.id)])) == 0):
-
-                            if (len(self.env['thewalkingdead.roads'].search(
-                                    [('outpost_2', '=', distancias[i].id), ('outpost_1', '=', c.id)])) == 0):
-
-                                def ccw(A, B, C):
-                                    return (C.position_y - A.position_y) * (B.position_x - A.position_x) > (
-                                                B.position_y - A.position_y) * (C.position_x - A.position_x)
-
-                                def intersect(A, B, C, D):
-                                    return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
-
-                                colisionen = self.env['thewalkingdead.roads'].search([]).filtered(
-                                    lambda r: intersect(r.outpost_1, r.outpost_2, c, distancias[i]))
-                                if len(colisionen) == 0:
-                                    self.env['thewalkingdead.roads'].create(
-                                        {'outpost_1': c.id, 'outpost_2': distancias[i].id})
-                                    all_roads = False
-                i = i + 1
-                print(all_roads, i)
+  
 
     def _get_roads(self):
         for c in self:

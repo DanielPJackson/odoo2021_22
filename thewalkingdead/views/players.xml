@@ -6,6 +6,7 @@
             <field name="name">thewalkingdead player Tree</field>
             <field name="model">thewalkingdead.player</field>
             <field name="arch" type="xml">
+
                 <tree>
                     <field name="name" />
                     <field name="survivors" widget="many2many_tags" />
@@ -16,6 +17,32 @@
 
 
 
+          <record model="ir.ui.view" id="thewalkingdead.player_form">
+      <field name="name">thewalkingdead player form</field>
+      <field name="model">thewalkingdead.player</field>
+      <field name="arch" type="xml">
+        <form>
+        <header>
 
+        <button name="create_survivor" type="object" string="Create Survivor" class="oe_highlight"/>
+
+
+        </header>
+        <sheet>
+          <group>
+          <field name="name"/>
+          <field name="energy"/>
+          <field name="water"/>
+          <field name="food"/>
+          <field name="oil"/>
+          <field name="survivors"/>
+
+          </group>
+
+
+          </sheet>
+        </form>
+      </field>
+    </record>
     </data>
 </odoo>
