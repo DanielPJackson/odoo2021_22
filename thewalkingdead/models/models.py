@@ -182,6 +182,7 @@ class roads(models.Model):
             r.name = r.outpost_1.name," <--> ",r.outpost_2.name
 
 
+
 class travel(models.Model):
     _name = 'thewalkingdead.travel'
     _description = 'journeys between outposts'
@@ -193,20 +194,9 @@ class travel(models.Model):
     date_departure = fields.Datetime(default=lambda r: fields.datetime.now())
     date_end = fields.Datetime(compute='_get_progress')
     progress = fields.Float(compute='_get_progress')
+    state = fields.Selection([('preparation', 'Preparation'), ('inprogress', 'In Progress'), ('finished', 'Finished')],
+                             default='preparation')
 
-#    @api.onchange('origin')
-    def _onchange_origin(self):
-        if self.origin != False:
-            roads_available = self.origin.roads
-            outposts_available = roads_available.outpost_1 + roads_available.outpost_2 - self.origin
-            players_in_outpost = self.origin.players.ids
-            print(outposts_available)
-            return {
-                'domain': {
-                    'destiny': [('id', 'in', outposts_available.ids)],
-                    'player': [('id', 'in', players_in_outpost)]
-                }
-            }
 
     @api.onchange('destiny')
     def _onchange_destiny(self):
@@ -219,6 +209,7 @@ class travel(models.Model):
     def launch_travel(self):
         for t in self:
             t.date_departure = fields.datetime.now()
+            t.state = 'inprogress'
             for p in t.passengers:
                 p.outpost = False
 
@@ -246,6 +237,20 @@ class travel(models.Model):
                 t.progress = 0
                 t.date_end = False
 
+    @api.model
+    def update_travel(self):
+        travels_in_progress = self.search([('state', '=', 'inprogress')])
+        print("Updating progress in: ", travels_in_progress)
+        for t in travels_in_progress:
+            if t.progress >= 100:
+                t.state='finished'
+                for p in t.passengers:
+                    p.write({'outpost': t.destiny.id})
+                self.env['thewalkingdead.event'].create(
+                    {'name': 'Arrival travel ' + t.name, 'player': t.player, 'event': 'thewalkingdead.travel,' + str(t.id),
+                     'description': 'Arrival travel... '})
+                print('Arrived!')
+
     player = fields.Many2one('thewalkingdead.player')
     passengers = fields.Many2many('thewalkingdead.survivor')
 
@@ -264,3 +269,21 @@ class character_template(models.Model):
     _description = 'Templates to generate characters'
     name = fields.Char()
     image = fields.Image(max_width=200, max_height=400)
+
+
+class event(models.Model):
+    _name = 'thewalkingdead.event'
+    _description = 'Events'
+
+    name = fields.Char()
+    player = fields.Many2many('res.partner')
+    event = fields.Reference([('thewalkingdead.building','Building'),('thewalkingdead.travel','Travel'),('thewalkingdead.player','Player'),('thewalkingdead.survivor','Survivor')])
+    description = fields.Text()
+
+    @api.model
+    def clean_messages(self):
+        yesterday = fields.Datetime.to_string(datetime.now()-timedelta(hours=24))
+        old_messages = self.search([('creation_date','<',yesterday)])
+        old_messages.unlink()
+
+

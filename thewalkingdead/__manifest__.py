@@ -32,6 +32,7 @@
         'views/travels.xml',
         'demo/building_type_demo.xml',
         'demo/character_templates.xml',
+        'crons/crons.xml'
     ],
     # only loaded in demonstration mode
     'demo': [
