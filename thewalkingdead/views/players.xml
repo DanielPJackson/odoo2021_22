@@ -2,9 +2,9 @@
     <data>
         <!-- explicit list view definition -->
 
-        <record model="ir.ui.view" id="thewalkingdead.player">
+        <record model="ir.ui.view" id="thewalkingdead.player_tree">
             <field name="name">thewalkingdead player Tree</field>
-            <field name="model">thewalkingdead.player</field>
+            <field name="model">res.partner</field>
             <field name="arch" type="xml">
 
                 <tree>
@@ -17,9 +17,9 @@
 
 
 
-          <record model="ir.ui.view" id="thewalkingdead.player_form">
+      <record model="ir.ui.view" id="thewalkingdead.player_form">
       <field name="name">thewalkingdead player form</field>
-      <field name="model">thewalkingdead.player</field>
+      <field name="model">res.partner</field>
       <field name="arch" type="xml">
         <form>
         <header>
@@ -43,6 +43,17 @@
           </sheet>
         </form>
       </field>
+    </record>
+              <record model="ir.ui.view" id="thewalkingdead.player_search">
+              <field name="name">thewalkingdead player search</field>
+              <field name="model">res.partner</field>
+              <field name="arch" type="xml">
+                 <search>
+                    <field name="name"/>
+                    <filter name="player_partner" string="Is Player" domain="[('is_player','=',True)]"></filter>
+
+                 </search>
+              </field>
     </record>
     </data>
 </odoo>

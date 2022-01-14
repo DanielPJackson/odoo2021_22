@@ -42,14 +42,23 @@
 
     <record model="ir.actions.act_window" id="thewalkingdead.players_action_window">
       <field name="name">thewalkingdead Players</field>
-      <field name="res_model">thewalkingdead.player</field>
+      <field name="res_model">res.partner</field>
       <field name="view_mode">tree,form</field>
+      <field name="domain"></field>
+       <field name="search_view_id" ref="thewalkingdead.player_search"/>
+      <field name="context">{'default_is_player': True, 'search_default_player_partner': 1}</field>
+      <field name="view_ids" eval="[(5, 0, 0),
+      (0, 0, {'view_mode': 'tree', 'view_id': ref('thewalkingdead.player_tree')}),
+      (0, 0, {'view_mode': 'form', 'view_id': ref('thewalkingdead.player_form')}),]" />
+
     </record>
+
      <record model="ir.actions.act_window" id="thewalkingdead.roads_action_window">
       <field name="name">thewalkingdead Roads</field>
       <field name="res_model">thewalkingdead.roads</field>
       <field name="view_mode">tree,form</field>
     </record>
+
     <record model="ir.actions.act_window" id="thewalkingdead.travel_action_window">
       <field name="name">thewalkingdead Travel</field>
       <field name="res_model">thewalkingdead.travel</field>

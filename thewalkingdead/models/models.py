@@ -5,41 +5,36 @@ from odoo import models, fields, api
 import random
 import math
 
-
-
-
 from odoo.exceptions import UserError
 
 
 class player(models.Model):
-    _name = 'thewalkingdead.player'
-    _description = 'Players'
+    _name = 'res.partner'
+    _inherit = 'res.partner'
 
-
-    survivors = fields.One2many('thewalkingdead.survivor','player')
-
-    name = fields.Char()
+    survivors = fields.One2many('thewalkingdead.survivor', 'player')
+    is_player = fields.Boolean(default=False)
     energy = fields.Float()
     oil = fields.Float()
     food = fields.Float()
     water = fields.Float()
+    premiumplayer = fields.Boolean(default=False)
     infected = fields.Float()
     daysinfected = fields.Float()
     quantity_survivors = fields.Integer(compute='_get_q_survivors')
-    outposts = fields.Many2many('thewalkingdead.outpost',compute='_get_cities')
+    outposts = fields.Many2many('thewalkingdead.outpost', compute='_get_cities')
+
     def create_survivor(self):
         for p in self:
             template = random.choice(self.env['thewalkingdead.character_template'].search([]).mapped(lambda t: t.id))
             outpost = random.choice(self.env['thewalkingdead.outpost'].search([]).mapped(lambda t: t.id))
-            survivor = self.env['thewalkingdead.survivor'].create({'player': p.id, 'template': template, 'outpost': outpost})
-
-
+            survivor = self.env['thewalkingdead.survivor'].create(
+                {'player': p.id, 'template': template, 'outpost': outpost})
 
     @api.depends('survivors')
     def _get_cities(self):
         for p in self:
             p.outposts = p.survivors.outpost.ids
-
 
     @api.depends('survivors')
     def _get_q_survivors(self):
@@ -51,24 +46,25 @@ class survivor(models.Model):
     _name = 'thewalkingdead.survivor'
     _description = 'Players'
 
-
     def _generate_name(self):
-        first = ["Commander","Bullet","Crusty", "Imperator","Doof","Duff","Immortal","Big","Grease", "Junk", "Rusty"
-                 "Gas","War","Feral","Blood","Lead","Max","Sprog","Smoke","Bum", "Wagon","Baron", "Leather", "Rotten"
-                 "Salt","Slake","Nuke","Oil","Night","Water","Ass","Tank","Rig","People","Leaky","Nocturne", "Satanic"
-                 "Dead", "Deadly", "Mike", "Mad","Smeg","Smeggy", "Jhonny","Unpredictable","Freakish","Snake","Praying"]
-        second = ["Killer","Rider","Cutter","Guts","Eater","Warrior","Colossus","Blaster","Gunner", "Smith", "Doe"
-                  "Farmer","Rock","Claw", "Boy", "Girl", "Driver","Ace","Quick","Blitzer", "Fury", "Roadster",
-                  "Interceptor", "Bastich", "Thief", "Bleeder", "smeg","Ass","Face", "Mutant", "Anomaly", "Risk",
-                  "Garcia", "Salamanca", "Goodman","Bum", "Sakura","Bleding Gums","Absent","Hybrid","Desire","Bubblegum"
-                  ,"Serpente","Petal","Dust","Mantis","Preacher"]
-        return random.choice(first)+" "+random.choice(second)
-
-
-
+        first = ["Commander", "Bullet", "Crusty", "Imperator", "Doof", "Duff", "Immortal", "Big", "Grease", "Junk",
+                 "Rusty"
+                 "Gas", "War", "Feral", "Blood", "Lead", "Max", "Sprog", "Smoke", "Bum", "Wagon", "Baron", "Leather",
+                 "Rotten"
+                 "Salt", "Slake", "Nuke", "Oil", "Night", "Water", "Ass", "Tank", "Rig", "People", "Leaky", "Nocturne",
+                 "Satanic"
+                 "Dead", "Deadly", "Mike", "Mad", "Eggy", "Slick", "Johnny", "Unpredictable", "Freakish", "Snake",
+                 "Praying"]
+        second = ["Killer", "Rider", "Cutter", "Guts", "Eater", "Warrior", "Colossus", "Blaster", "Gunner", "Smith",
+                  "Doe"
+                  "Farmer", "Rock", "Claw", "Boy", "Girl", "Driver", "Ace", "Quick", "Blitzer", "Fury", "Roadster",
+                  "Interceptor", "Bastich", "Thief", "Bleeder", "Sausage", "Ass", "Face", "Mutant", "Anomaly", "Risk",
+                  "Garcia", "Salamanca", "Goodman", "Bum", "Sakura", "Bleding Gums", "Absent", "Hybrid", "Desire",
+                  "Bubblegum"
+            , "Serpente", "Petal", "Dust", "Mantis", "Preacher"]
+        return random.choice(first) + " " + random.choice(second)
 
     def _generate_infection_state(self):
-
         return round(random.random())
 
     name = fields.Char(default=_generate_name)
@@ -87,37 +83,33 @@ class survivor(models.Model):
 
     ], required=False, default='draft')
 
-
     def btn_draft(self):
         self.state = 'draft'
-
 
     def btn_confirmar(self):
         self.state = 'confirmar'
 
 
-
-
 class outpost(models.Model):
     _name = 'thewalkingdead.outpost'
     _description = 'outpost'
+
     def _generate_position(self):
         existent_outposts = self.search([])
 
-        x = random.randint(-1000,1000)
+        x = random.randint(-1000, 1000)
         for e in existent_outposts:
-            if e.position_x!=x:
+            if e.position_x != x:
                 return x
 
-
-
-
-
     def _generate_name(self):
-        first = ["Dark","chuck up","hopeful","hopeless","steel", "hard", "musky", "crusty", "rotton", "shining", "gloomy", "graceful", "silver"]
-        second = ["hut", "city", "rock", "shire" ,"town", "forest", "cliff","point","clearing","district","club","horizon"]
-        return random.choice(first)+" "+random.choice(second)
-    name =  fields.Char(default=_generate_name)
+        first = ["Dark", "chuck up", "hopeful", "hopeless", "steel", "hard", "musky", "crusty", "rotton", "shining",
+                 "gloomy", "graceful", "silver"]
+        second = ["hut", "city", "rock", "shire", "town", "forest", "cliff", "point", "clearing", "district", "club",
+                  "horizon"]
+        return random.choice(first) + " " + random.choice(second)
+
+    name = fields.Char(default=_generate_name)
     energy = fields.Float()
     oil = fields.Float()
     food = fields.Float()
@@ -140,12 +132,10 @@ class outpost(models.Model):
             print(players)
             c.players = players
 
-
-  
-
     def _get_roads(self):
         for c in self:
-            c.roads = self.env['thewalkingdead.roads'].search(['|', ('outpost_1', '=', c.id), ('outpost_2', '=', c.id)]).ids
+            c.roads = self.env['thewalkingdead.roads'].search(
+                ['|', ('outpost_1', '=', c.id), ('outpost_2', '=', c.id)]).ids
 
 
 class building_type(models.Model):
@@ -159,28 +149,27 @@ class building_type(models.Model):
     water = fields.Float()
     weapon_power = fields.Float()
     defense = fields.Float()
+
+
 class roads(models.Model):
     _name = 'thewalkingdead.roads'
     _description = 'Roads beween outposts'
-
 
     name = fields.Char(compute='_get_name')
     outpost_1 = fields.Many2one('thewalkingdead.outpost', ondelete='cascade')
     outpost_2 = fields.Many2one('thewalkingdead.outpost', ondelete='cascade')
     distance = fields.Float(compute='_get_distance')
 
-    @api.depends('outpost_1','outpost_2')
+    @api.depends('outpost_1', 'outpost_2')
     def _get_distance(self):
         for r in self:
-            r.distance = math.sqrt((r.outpost_1.position_x - r.outpost_1.position_x)**2 + (r.outpost_2.position_x - r.outpost_2.position_y)**2)
-
-
+            r.distance = math.sqrt((r.outpost_1.position_x - r.outpost_1.position_x) ** 2 + (
+                        r.outpost_2.position_x - r.outpost_2.position_y) ** 2)
 
     @api.onchange('distance')
     def _get_name(self):
         for r in self:
-            r.name = r.outpost_1.name," <--> ",r.outpost_2.name
-
+            r.name = r.outpost_1.name, " <--> ", r.outpost_2.name
 
 
 class travel(models.Model):
@@ -197,7 +186,6 @@ class travel(models.Model):
     state = fields.Selection([('preparation', 'Preparation'), ('inprogress', 'In Progress'), ('finished', 'Finished')],
                              default='preparation')
 
-
     @api.onchange('destiny')
     def _onchange_destiny(self):
         if self.destiny != False:
@@ -205,14 +193,12 @@ class travel(models.Model):
             self.roads = roads_available.id
             return {}
 
-
     def launch_travel(self):
         for t in self:
             t.date_departure = fields.datetime.now()
             t.state = 'inprogress'
             for p in t.passengers:
                 p.outpost = False
-
 
     @api.depends('date_departure', 'roads')
     def _get_progress(self):
@@ -225,7 +211,9 @@ class travel(models.Model):
                     data = data + timedelta(hours=t.roads.distance)
                     t.date_end = fields.Datetime.to_string(data)
 
-                    time_remaining = fields.Datetime.context_timestamp(self, t.date_end) - fields.Datetime.context_timestamp(self, datetime.now())
+                    time_remaining = fields.Datetime.context_timestamp(self,
+                                                                       t.date_end) - fields.Datetime.context_timestamp(
+                        self, datetime.now())
                     time_remaining = time_remaining.total_seconds() / 60 / 60
                     t.progress = (1 - time_remaining / t.roads.distance) * 100
                     if t.progress >= 100:
@@ -243,16 +231,18 @@ class travel(models.Model):
         print("Updating progress in: ", travels_in_progress)
         for t in travels_in_progress:
             if t.progress >= 100:
-                t.state='finished'
+                t.state = 'finished'
                 for p in t.passengers:
                     p.write({'outpost': t.destiny.id})
                 self.env['thewalkingdead.event'].create(
-                    {'name': 'Arrival travel ' + t.name, 'player': t.player, 'event': 'thewalkingdead.travel,' + str(t.id),
+                    {'name': 'Arrival travel ' + t.name, 'player': t.player,
+                     'event': 'thewalkingdead.travel,' + str(t.id),
                      'description': 'Arrival travel... '})
                 print('Arrived!')
 
     player = fields.Many2one('thewalkingdead.player')
     passengers = fields.Many2many('thewalkingdead.survivor')
+
 
 class building(models.Model):
     _name = 'thewalkingdead.building'
@@ -261,7 +251,6 @@ class building(models.Model):
     name = fields.Char()
     type = fields.Many2one('thewalkingdead.building_type')
     outpost = fields.Many2one('thewalkingdead.outpost')
-
 
 
 class character_template(models.Model):
@@ -277,13 +266,12 @@ class event(models.Model):
 
     name = fields.Char()
     player = fields.Many2many('res.partner')
-    event = fields.Reference([('thewalkingdead.building','Building'),('thewalkingdead.travel','Travel'),('thewalkingdead.player','Player'),('thewalkingdead.survivor','Survivor')])
+    event = fields.Reference([('thewalkingdead.building', 'Building'), ('thewalkingdead.travel', 'Travel'),
+                              ('thewalkingdead.player', 'Player'), ('thewalkingdead.survivor', 'Survivor')])
     description = fields.Text()
 
     @api.model
     def clean_messages(self):
-        yesterday = fields.Datetime.to_string(datetime.now()-timedelta(hours=24))
-        old_messages = self.search([('creation_date','<',yesterday)])
+        yesterday = fields.Datetime.to_string(datetime.now() - timedelta(hours=24))
+        old_messages = self.search([('creation_date', '<', yesterday)])
         old_messages.unlink()
-
-
