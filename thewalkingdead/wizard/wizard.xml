@@ -1,0 +1,27 @@
+  <odoo>
+    <data>
+
+
+            <record model="ir.ui.view" id="wizard_revive_form">
+                      <field name="name">thewalkingdead player search</field>
+                      <field name="model">wizard.revive</field>
+                      <field name="arch" type="xml">
+                         <form>
+                            <field name="coins"/>
+                            <field name="survivors_dead"/>
+
+                         </form>
+                      </field>
+            </record>
+            <record model="ir.actions.act_window" id="wizard_survivor_revive_act_window">
+                  <field name="name">thewalkingdead Survivor Revivor Wizard</field>
+                  <field name="res_model">wizard.revive</field>
+                  <field name="type">ir.actions.act_window</field>
+                  <field name="view_id" ref="wizard_revive_form"></field>
+                  <field name="target">new</field>
+                  <field name="view_mode">form</field>
+            </record>
+
+            <menuitem name="Survivor Revivor" id="survivor_revivor_wizard_menu" parent="thewalkingdead.playerss_list" action="wizard_survivor_revive_act_window" />
+    </data>
+</odoo>

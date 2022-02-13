@@ -23,6 +23,7 @@ class player(models.Model):
     daysinfected = fields.Float()
     quantity_survivors = fields.Integer(compute='_get_q_survivors')
     outposts = fields.Many2many('thewalkingdead.outpost', compute='_get_cities')
+    coins = fields.Integer(default=0)
 
     def create_survivor(self):
         for p in self:
@@ -40,6 +41,10 @@ class player(models.Model):
     def _get_q_survivors(self):
         for p in self:
             p.quantity_survivors = len(p.survivors)
+
+    def apply_coins(self, addcoin):
+        for p in self:
+            p.coins = p.coins + addcoin
 
 
 class survivor(models.Model):
@@ -72,7 +77,7 @@ class survivor(models.Model):
     infected = fields.Integer(default=_generate_infection_state)
 
     zombie = fields.Float(default=0)
-    player = fields.Many2one('thewalkingdead.player', ondelete='set null')
+    player = fields.Many2one('res.partner', ondelete='set null')
     outpost = fields.Many2one('thewalkingdead.outpost', ondelete='restrict')
     template = fields.Many2one('thewalkingdead.character_template', ondelete='restrict')
     avatar = fields.Image(max_width=200, max_height=400, related='template.image')
@@ -116,7 +121,7 @@ class outpost(models.Model):
     water = fields.Float()
 
     roads = fields.Many2many('thewalkingdead.roads', compute='_get_roads')
-    players = fields.Many2many('thewalkingdead.player', compute='_get_players', string='Players with survivors')
+    players = fields.Many2many('res.partner', compute='_get_players', string='Players with survivors')
     survivors = fields.One2many('thewalkingdead.survivor', 'player')
 
     position_x = fields.Integer(default=_generate_position)
@@ -240,7 +245,7 @@ class travel(models.Model):
                      'description': 'Arrival travel... '})
                 print('Arrived!')
 
-    player = fields.Many2one('thewalkingdead.player')
+    player = fields.Many2one('res.partner')
     passengers = fields.Many2many('thewalkingdead.survivor')
 
 
@@ -267,7 +272,7 @@ class event(models.Model):
     name = fields.Char()
     player = fields.Many2many('res.partner')
     event = fields.Reference([('thewalkingdead.building', 'Building'), ('thewalkingdead.travel', 'Travel'),
-                              ('thewalkingdead.player', 'Player'), ('thewalkingdead.survivor', 'Survivor')])
+                              ('res..partner', 'Player'), ('thewalkingdead.survivor', 'Survivor')])
     description = fields.Text()
 
     @api.model
@@ -275,3 +280,53 @@ class event(models.Model):
         yesterday = fields.Datetime.to_string(datetime.now() - timedelta(hours=24))
         old_messages = self.search([('creation_date', '<', yesterday)])
         old_messages.unlink()
+
+
+
+
+class product_coins(models.Model):
+    _name = 'product.template'
+    _inherit = 'product.template'
+
+    coins = fields.Integer(default=100)
+
+
+
+
+class sale_coins(models.Model):
+    _name = 'sale.order'
+    _inherit = 'sale.order'
+
+
+
+    def apply_coins(self):
+
+        premium_products = self.order_line.filtered(lambda p: p.product_id.coins)
+        for p in premium_products:
+            self.partner_id.apply_coins(p.product_id.coins)
+
+    def write(self,values):
+        super(sale_coins,self).write(values)
+        self.apply_coins()
+
+    @api.model
+    def create(self,values):
+        record = super(sale_coins,self).create(values)
+        record.apply_coins()
+        return record
+
+class RevCharacter(models.TransientModel):
+    _name = 'wizard.revive'
+    survivors_dead =fields.Many2many('thewalkingdead.survivors', compute='_get_survivors')  #fields.One2many('thewalkingdead.survivor', compute='_get_survivors')
+    coins = fields.Integer(self.origin.coins)
+
+
+
+    def _get_survivors(self):
+
+           return self.origin.survivors.filtered(infected==1)
+
+
+    def action_resurect_wizard(self):
+        action=self.env.ref('wizard_survivor_revive_act_window').read()[0]
+        return action

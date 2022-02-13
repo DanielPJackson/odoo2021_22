@@ -21,16 +21,18 @@
       <field name="name">thewalkingdead player form</field>
       <field name="model">res.partner</field>
       <field name="arch" type="xml">
-        <form>
+        <form banner_route="/thewalkingdead/revive_banner">
         <header>
 
         <button name="create_survivor" type="object" string="Create Survivor" class="oe_highlight"/>
+
 
 
         </header>
         <sheet>
           <group>
           <field name="name"/>
+          <field name="coins"/>
           <field name="energy"/>
           <field name="water"/>
           <field name="food"/>

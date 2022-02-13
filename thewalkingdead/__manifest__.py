@@ -20,19 +20,23 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'mail'],
+    'depends': ['base', 'mail', 'sale'],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-        'views/views.xml',
+
         'views/templates.xml',
         'views/survivors.xml',
+        'views/coins.xml',
         'views/players.xml',
         'views/travels.xml',
+        'views/views.xml',
         'demo/building_type_demo.xml',
         'demo/character_templates.xml',
-        'crons/crons.xml'
+        'crons/crons.xml',
+        'wizard/wizard.xml',
+
     ],
     # only loaded in demonstration mode
     'demo': [

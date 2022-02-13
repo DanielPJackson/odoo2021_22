@@ -45,7 +45,7 @@
       <field name="res_model">res.partner</field>
       <field name="view_mode">tree,form</field>
       <field name="domain"></field>
-       <field name="search_view_id" ref="thewalkingdead.player_search"/>
+      <field name="search_view_id" ref="thewalkingdead.player_search"/>
       <field name="context">{'default_is_player': True, 'search_default_player_partner': 1}</field>
       <field name="view_ids" eval="[(5, 0, 0),
       (0, 0, {'view_mode': 'tree', 'view_id': ref('thewalkingdead.player_tree')}),
