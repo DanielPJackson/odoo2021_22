@@ -4,6 +4,7 @@ from operator import pos
 from odoo import models, fields, api
 import random
 import math
+from odoo.exceptions import ValidationError
 
 from odoo.exceptions import UserError
 
@@ -23,7 +24,7 @@ class player(models.Model):
     daysinfected = fields.Float()
     quantity_survivors = fields.Integer(compute='_get_q_survivors')
     outposts = fields.Many2many('thewalkingdead.outpost', compute='_get_cities')
-    coins = fields.Integer(default=0)
+    coins = fields.Integer(default=10)
 
     def create_survivor(self):
         for p in self:
@@ -51,6 +52,20 @@ class survivor(models.Model):
     _name = 'thewalkingdead.survivor'
     _description = 'Players'
 
+
+    def revive(self):
+        for s in self:
+            if (s.infected==1):
+                if (s.player.coins >=100):
+                    s.infected=0
+                    s.player.coins=s.player.coins-100
+                else:
+                    raise ValidationError('Not enough coins!')
+
+
+
+
+
     def _generate_name(self):
         first = ["Commander", "Bullet", "Crusty", "Imperator", "Doof", "Duff", "Immortal", "Big", "Grease", "Junk",
                  "Rusty"
@@ -63,7 +78,7 @@ class survivor(models.Model):
         second = ["Killer", "Rider", "Cutter", "Guts", "Eater", "Warrior", "Colossus", "Blaster", "Gunner", "Smith",
                   "Doe"
                   "Farmer", "Rock", "Claw", "Boy", "Girl", "Driver", "Ace", "Quick", "Blitzer", "Fury", "Roadster",
-                  "Interceptor", "Bastich", "Thief", "Bleeder", "Sausage", "Ass", "Face", "Mutant", "Anomaly", "Risk",
+                  "Interceptor", "Bastich", "Cheerio", "Thief", "Bleeder", "Sausage", "Ass", "Face", "Mutant", "Anomaly", "Risk",
                   "Garcia", "Salamanca", "Goodman", "Bum", "Sakura", "Bleding Gums", "Absent", "Hybrid", "Desire",
                   "Bubblegum"
             , "Serpente", "Petal", "Dust", "Mantis", "Preacher"]
@@ -316,17 +331,25 @@ class sale_coins(models.Model):
         return record
 
 class RevCharacter(models.TransientModel):
-    _name = 'wizard.revive'
-    survivors_dead =fields.Many2many('thewalkingdead.survivors', compute='_get_survivors')  #fields.One2many('thewalkingdead.survivor', compute='_get_survivors')
-    coins = fields.Integer(self.origin.coins)
 
-
-
+    def _get_player(self):
+        print(self.env['res.partner'].browse(self._context.get('active_id')))
+        return self.env['res.partner'].browse(self._context.get('active_id'))
     def _get_survivors(self):
+        print(self.env['res.partner'].browse(self._context.get('active_id')).survivors.ids)
+        survivors= self.env['res.partner'].browse(self._context.get('active_id')).survivors
+        survivors = survivors.filtered(lambda s:s.infected==1).ids
+        return survivors
+        #return self.origin.survivors.filtered(infected==1)
 
-           return self.origin.survivors.filtered(infected==1)
+    _name = 'thewalkingdead.wizard_revive'
+    player=fields.Many2one('res.partner', default=_get_player)
+    survivors_dead =fields.Many2many('thewalkingdead.survivor', default=_get_survivors)
+    coins = fields.Integer(related='player.coins')
 
 
-    def action_resurect_wizard(self):
-        action=self.env.ref('wizard_survivor_revive_act_window').read()[0]
-        return action
+
+
+
+
+

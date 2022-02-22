@@ -7,3 +7,5 @@ access_thewalkingdead_roads,thewalkingdead.roads,model_thewalkingdead_roads,base
 access_thewalkingdead_travel,thewalkingdead.travel,model_thewalkingdead_travel,base.group_user,1,1,1,1
 access_thewalkingdead_character_template,thewalkingdead.character_template,model_thewalkingdead_character_template,base.group_user,1,1,1,1
 access_thewalkingdead_event,thewalkingdead.event,model_thewalkingdead_event,base.group_user,1,1,1,1
+access_thewalkingdead_wizard_revive,thewalkingdead.wizard_revive,model_thewalkingdead_wizard_revive,base.group_user,1,1,1,1
+

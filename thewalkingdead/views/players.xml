@@ -21,10 +21,11 @@
       <field name="name">thewalkingdead player form</field>
       <field name="model">res.partner</field>
       <field name="arch" type="xml">
-        <form banner_route="/thewalkingdead/revive_banner">
+        <form>
         <header>
 
         <button name="create_survivor" type="object" string="Create Survivor" class="oe_highlight"/>
+        <button name="%(wizard_survivor_revive_act_window)d" type="action" string="Revive Survivor" class="oe_highlight"/>
 
 
 

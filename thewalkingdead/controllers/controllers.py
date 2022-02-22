@@ -4,18 +4,18 @@ import json
 from odoo import tools
 from odoo.fields import Integer
 
-class banner_survivor_revive_controller(http.Controller):
-    @http.route('/thewalkingdead/revive_banner', auth='user', type='json')
-    def banner(self):
-        return {
-            'html': """
-                <div  class="thewalkingdead_banner" style="height: 200px; background-image: url(/thewalkingdead/static/src/revive.jpg)">
-                <div class="thewalkingdead_button" style="position: static; color:#fff;">
-                <a class="banner_button" type="action" data-reload-on-close="true" 
-                role="button" data-method="action_resurect_wizard" data-model="wizard.revive">Revive Survivors</a>
-                </div>
-                </div> """
-        }
+#class banner_survivor_revive_controller(http.Controller):
+#    @http.route('/thewalkingdead/revive_banner', auth='user', type='json')
+ #   def banner(self):
+  #      return {
+   #         'html': """
+    #            <div  class="thewalkingdead_banner" style="height: 200px; background-image: url(/thewalkingdead/static/src/revive.jpg)">
+     #           <div class="thewalkingdead_button" style="position: static; color:#fff;">
+      #          <a class="banner_button" type="action" data-reload-on-close="true"
+       #         role="button" data-method="action_resurect_wizard" data-model="wizard.revive">Revive Survivors</a>
+        #        </div>
+         #       </div> """
+        #}
 # class Thewalkingdead(http.Controller):
 #     @http.route('/thewalkingdead/thewalkingdead/', auth='public')
 #     def index(self, **kw):
