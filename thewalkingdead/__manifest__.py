@@ -25,7 +25,8 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
-
+        'wizard/wizard_revive.xml',
+        'wizard/wizard_create.xml',
         'views/templates.xml',
         'views/survivors.xml',
         'views/coins.xml',
@@ -35,8 +36,7 @@
         'demo/building_type_demo.xml',
         'demo/character_templates.xml',
         'crons/crons.xml',
-        'wizard/wizard_revive.xml',
-        'wizard/wizard_create.xml',
+
 
     ],
     # only loaded in demonstration mode
