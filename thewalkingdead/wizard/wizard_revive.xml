@@ -3,7 +3,7 @@
 
 
             <record model="ir.ui.view" id="wizard_revive_form">
-                      <field name="name">thewalkingdead player search</field>
+                      <field name="name">thewalkingdead Revive</field>
                       <field name="model">thewalkingdead.wizard_revive</field>
                       <field name="arch" type="xml">
                          <form>
@@ -15,9 +15,7 @@
                                       <field name="infected"/>
                                       <button name="revive" type="object" string="Revive Survivor for 100 dCoins" class="oe_highlight"/>
                                  </tree>
-
                             </field>
-                            <field name="player"/>
 
                          </form>
                       </field>

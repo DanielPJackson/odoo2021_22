@@ -48,6 +48,11 @@ class player(models.Model):
             p.coins = p.coins + addcoin
 
 
+
+
+
+
+
 class survivor(models.Model):
     _name = 'thewalkingdead.survivor'
     _description = 'Players'
@@ -349,7 +354,65 @@ class RevCharacter(models.TransientModel):
 
 
 
+class MakeAssistedCharacter(models.TransientModel):
+
+    def _get_player(self):
+        print(self.env['res.partner'].browse(self._context.get('active_id')))
+        return self.env['res.partner'].browse(self._context.get('active_id'))
+    def _get_survivors(self):
+        print(self.env['res.partner'].browse(self._context.get('active_id')).survivors.ids)
+        survivors= self.env['res.partner'].browse(self._context.get('active_id')).survivors
+        survivors = survivors.filtered(lambda s:s.infected==1).ids
+        return survivors
+        #return self.origin.survivors.filtered(infected==1)
+
+    def next(self):
+        if (self.state=='1'):
+            self.state='2'
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
+    def previous(self):
+        if (self.state == '2'):
+            self.state = '1'
+
+        return {
+            'type' : 'ir.actions.act_window',
+            'res_model' : self._name,
+            'res_id' : self.id,
+            'view_mode' : 'form',
+            'target' : 'new',
+        }
 
 
+
+
+
+    _name = 'thewalkingdead.wizard_create'
+    player=fields.Many2one('res.partner', default=_get_player)
+    survivors_dead =fields.Many2many('thewalkingdead.survivor', default=_get_survivors)
+    coins = fields.Integer(related='player.coins')
+    state = fields.Selection([('1','survivor info'),('2','starting resources')],default='1')
+
+    name = fields.Char()
+    outpost = fields.Many2one('thewalkingdead.outpost', ondelete='restrict')
+
+
+
+
+
+    def create_survivor(self):
+        print (self.name)
+        survivor = self.env['thewalkingdead.survivor'].create({
+                                                                'player' : self.player.id,
+                                                                'name': self.name,
+                                                                'outpost': self.outpost.id,
+                                                                        })
 
 

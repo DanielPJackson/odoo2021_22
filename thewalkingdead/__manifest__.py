@@ -35,7 +35,8 @@
         'demo/building_type_demo.xml',
         'demo/character_templates.xml',
         'crons/crons.xml',
-        'wizard/wizard.xml',
+        'wizard/wizard_revive.xml',
+        'wizard/wizard_create.xml',
 
     ],
     # only loaded in demonstration mode

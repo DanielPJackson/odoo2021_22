@@ -26,6 +26,7 @@
 
         <button name="create_survivor" type="object" string="Create Survivor" class="oe_highlight"/>
         <button name="%(wizard_survivor_revive_act_window)d" type="action" string="Revive Survivor" class="oe_highlight"/>
+        <button name="%(wizard_survivor_create_act_window)d" type="action" string="Create Survivor-Assisted" class="oe_highlight"/>
 
 
 

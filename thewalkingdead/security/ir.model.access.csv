@@ -8,4 +8,5 @@ access_thewalkingdead_travel,thewalkingdead.travel,model_thewalkingdead_travel,b
 access_thewalkingdead_character_template,thewalkingdead.character_template,model_thewalkingdead_character_template,base.group_user,1,1,1,1
 access_thewalkingdead_event,thewalkingdead.event,model_thewalkingdead_event,base.group_user,1,1,1,1
 access_thewalkingdead_wizard_revive,thewalkingdead.wizard_revive,model_thewalkingdead_wizard_revive,base.group_user,1,1,1,1
+access_thewalkingdead_wizard_create,thewalkingdead.wizard_create,model_thewalkingdead_wizard_create,base.group_user,1,1,1,1
 

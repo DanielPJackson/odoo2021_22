@@ -1,0 +1,44 @@
+  <odoo>
+    <data>
+
+
+            <record model="ir.ui.view" id="wizard_create_form">
+                      <field name="name">thewalkingdead survivor creator assistant</field>
+                      <field name="model">thewalkingdead.wizard_create</field>
+                      <field name="arch" type="xml">
+                         <form>
+                            <header>
+                                <button name="previous" type="object" string="Previous" class="btn btn-secondary" states="2"/>
+                                <button name="next" type="object" string="Next" class="btn oe_highlight" states="1"/>
+                                <field name="state" widget="statusbar"/>
+                            </header>
+                            <sheet>
+                             <group states="1,2">
+                                <field name="name" states="1" attrs="{'readonly':[('state','!=','1')]}"/>
+                             </group>
+                             <group string="Resources" state="2">
+                                <field name="outpost" states="2" attrs="{'readonly':[('state','!=','2')]}"/>
+
+                            </group>
+
+                            </sheet>
+                            <footer>
+
+                           <button name="create_survivor" type="object" string="create survivor" class="btn oe_highlight" states="2"/>
+
+                            </footer>
+                         </form>
+                      </field>
+            </record>
+            <record model="ir.actions.act_window" id="wizard_survivor_create_act_window">
+                  <field name="name">thewalkingdead Survivor Revivor Wizard</field>
+                  <field name="res_model">thewalkingdead.wizard_create</field>
+                  <field name="type">ir.actions.act_window</field>
+                  <field name="view_id" ref="wizard_create_form"></field>
+                  <field name="target">new</field>
+                  <field name="view_mode">form</field>
+            </record>
+
+
+    </data>
+</odoo>
